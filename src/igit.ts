@@ -5,7 +5,20 @@
 'use strict';
 
 
+export interface ICommitInfo {
+
+    committerTimestamp: number;
+
+    committerName: string;
+
+    message: string;
+}
+
 export interface IGit {
 
-    OpenRepo(path: string) : Promise<string[]>;
+    GetLogs(gitRoot: string): Promise<Array<ICommitInfo>>;
+
+    GetLogForFile(gitRoot: string, pathToFile: string): Promise<Array<ICommitInfo>>;
+
 }
+
