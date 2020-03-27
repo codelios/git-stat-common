@@ -5,5 +5,5 @@
 
 'use strict';
 
-export { IGit } from './igit';
+export { IGit, ICommitInfo } from './igit';
 export { MyIsomorphicGit } from './myisomorphicgit';
