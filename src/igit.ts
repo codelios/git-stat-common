@@ -12,6 +12,9 @@ export interface ICommitEntry {
      */
     committerID: number;
 
+    /**
+     * Commit message
+     */
     message: string;
 
     /**
