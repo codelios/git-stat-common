@@ -17,6 +17,7 @@ export class MyIsomorphicGit {
     public toICommitEntry(singleCommit: git.ReadCommitResult): ICommitEntry {
         return <ICommitEntry>  {
             committerTimestamp: singleCommit.commit.committer.timestamp,
+            committerTZOffset :singleCommit.commit.committer.timezoneOffset,
             committerID: -1,
             message: singleCommit.commit.message
         }

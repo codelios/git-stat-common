@@ -7,11 +7,22 @@
 
 export interface ICommitEntry {
 
-    committerTimestamp: number;
-
+    /**
+     * A reference to a dictionary
+     */
     committerID: number;
 
     message: string;
+
+    /**
+     * UTC Unix timestamp in seconds
+     */
+    committerTimestamp: number;
+
+    /**
+     * Timezone difference from UTC in minutes
+     */
+    committerTZOffset: number;
 }
 
 export interface ICommitInfo {
