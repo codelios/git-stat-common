@@ -30,8 +30,14 @@ export interface ICommitEntry {
 
 export interface ICommitInfo {
 
+    /**
+     * List of commits for the given criteria
+     */
     commits: Array<ICommitEntry>;
 
+    /**
+     * CommitDict with the cross reference between id and the name of the committer.
+     */
     commitDict: Map<number, string>;
 }
 
