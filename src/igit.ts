@@ -61,10 +61,10 @@ export class CommitRepository {
 
     reverseDict: Map<string, number> = new Map<string, number>();
 
-    public addCommit(commitEntry: ICommitEntry, commitKey: string) {
+    public addCommit(commitEntry: ICommitEntry, commitKey: string, persistInfo: string) {
         let committerID: number|undefined = this.reverseDict.get(commitKey);
         if (committerID === undefined || committerID === null) {
-            this.commitDict.set(this.globalCommitterID, commitKey);
+            this.commitDict.set(this.globalCommitterID, persistInfo);
             this.reverseDict.set(commitKey, this.globalCommitterID);
             committerID = this.globalCommitterID;
             this.globalCommitterID++;

@@ -23,6 +23,13 @@ export class MyIsomorphicGit {
         }
     }
 
+    addCommit(commitRepository: CommitRepository, singleCommit: git.ReadCommitResult) {
+        commitRepository.addCommit(this.toICommitEntry(singleCommit),
+                    singleCommit.commit.committer.name + singleCommit.commit.committer.email,
+                    singleCommit.commit.committer.name);
+
+    }
+
     public async GetLogs(gitRoot: string): Promise<ICommitInfo> {
         const self = this;
         return await new Promise<ICommitInfo>( async function(resolve, reject) {
@@ -32,7 +39,7 @@ export class MyIsomorphicGit {
             });
             const commitRepository: CommitRepository = new CommitRepository();
             for (const singleCommit of commits) {
-                commitRepository.addCommit(self.toICommitEntry(singleCommit), singleCommit.commit.committer.name);
+                self.addCommit(commitRepository, singleCommit);
             }
             return resolve(commitRepository.getCommitInfo());
         });
@@ -50,14 +57,14 @@ export class MyIsomorphicGit {
                     const o =  await git.readObject({ fs, dir: gitRoot, oid: singleCommit.oid, filepath: pathToFile });
                     if (o.oid !== lastSHA) {
                         if (lastSHA !== null && lastCommit !== null) {
-                            commitRepository.addCommit(self.toICommitEntry(lastCommit), lastCommit.commit.committer.name);
+                            self.addCommit(commitRepository, lastCommit);
                         }
                         lastSHA = o.oid
                     }
                 } catch (err) {
                     // file no longer there
                     if (lastCommit !== null) {
-                        commitRepository.addCommit(self.toICommitEntry(lastCommit), lastCommit.commit.committer.name);
+                        self.addCommit(commitRepository, lastCommit);
                     }
                 }
                 lastCommit = singleCommit
