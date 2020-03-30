@@ -35,7 +35,7 @@ export class CommitRepository {
 
     myCommits = Array<ICommitEntry>();
 
-    globalCommitterID: number = 0;
+    globalCommitterID: number = 1;
 
     commitDict: Map<number, string> = new Map<number, string>();
 
