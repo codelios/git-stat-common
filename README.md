@@ -1,0 +1,1 @@
+Common Library to interact with git repository through Typescript for use by plugins.

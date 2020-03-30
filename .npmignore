@@ -1,0 +1,9 @@
+Dockerfile
+docker-compose.yml
+.dockerignore
+node_modules
+src
+tsconfig.json
+tslint.json
+webpack.config.js
+__tests__
