@@ -5,20 +5,60 @@
 'use strict';
 
 
-export interface ICommitInfo {
+export interface ICommitEntry {
 
     committerTimestamp: number;
 
-    committerName: string;
+    committerID: number;
 
     message: string;
 }
 
+export interface ICommitInfo {
+
+    commits: Array<ICommitEntry>;
+
+    commitDict: Map<number, string>;
+}
+
+
 export interface IGit {
 
-    GetLogs(gitRoot: string): Promise<Array<ICommitInfo>>;
+    GetLogs(gitRoot: string): Promise<ICommitInfo>;
 
-    GetLogForFile(gitRoot: string, pathToFile: string): Promise<Array<ICommitInfo>>;
+    GetLogForFile(gitRoot: string, pathToFile: string): Promise<ICommitInfo>;
 
 }
 
+
+export class CommitRepository {
+
+    myCommits = Array<ICommitEntry>();
+
+    globalCommitterID: number = 0;
+
+    commitDict: Map<number, string> = new Map<number, string>();
+
+    reverseDict: Map<string, number> = new Map<string, number>();
+
+    public addCommit(commitEntry: ICommitEntry, commitKey: string) {
+        let committerID: number|undefined = this.reverseDict.get(commitKey);
+        if (committerID === undefined || committerID === null) {
+            this.commitDict.set(this.globalCommitterID, commitKey);
+            this.reverseDict.set(commitKey, this.globalCommitterID);
+            committerID = this.globalCommitterID;
+            this.globalCommitterID++;
+        }
+        commitEntry.committerID = committerID;
+        this.myCommits.push(commitEntry);
+    }
+
+    public getCommitInfo(): ICommitInfo {
+        return <ICommitInfo> {
+            commits: this.myCommits,
+            commitDict: this.commitDict
+        }
+    }
+
+
+}

@@ -15,9 +15,10 @@ describe('MyIsomorphicGit class' , () => {
         const gitClient: MyIsomorphicGit = new MyIsomorphicGit();
         const filePath = "/opt/code/src/github.com/apache/commons-lang";
         gitClient.GetLogs(filePath).then(
-            (commits: Array<ICommitInfo>) => {
-                expect(commits).to.be.not.null;
-                expect(commits.length).to.be.greaterThan(0);
+            (commitInfo: ICommitInfo) => {
+                expect(commitInfo).to.be.not.null;
+                expect(commitInfo.commits.length).to.be.greaterThan(0);
+                expect(commitInfo.commitDict.size).to.be.greaterThan(0);
             },
             err => {
                 expect(err).to.be.null;

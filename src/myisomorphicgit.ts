@@ -7,55 +7,57 @@
 
 import * as git from 'isomorphic-git'
 import * as fs from 'fs';
-import { ICommitInfo } from './igit';
+import { ICommitInfo, ICommitEntry, CommitRepository } from './igit';
 
 export class MyIsomorphicGit {
 
     constructor() {
     }
 
-    public GetLogs(gitRoot: string): Promise<Array<ICommitInfo>> {
-        return new Promise<Array<ICommitInfo>>( function(resolve, reject) {
+    public GetLogs(gitRoot: string): Promise<ICommitInfo> {
+        return new Promise<ICommitInfo>( function(resolve, reject) {
             git.log({
                 fs,
                 dir: gitRoot
             }).then(
                 (commits: Array<git.ReadCommitResult>) => {
-                    const myCommits = Array<ICommitInfo>();
+                    const commitRepository: CommitRepository = new CommitRepository();
                     for (const singleCommit of commits) {
-                        myCommits.push(
-                            <ICommitInfo> {
+                        commitRepository.addCommit(
+                            <ICommitEntry>  {
                                 committerTimestamp: singleCommit.commit.committer.timestamp,
-                                committerName: singleCommit.commit.committer.name,
+                                committerID: -1,
                                 message: singleCommit.commit.message
-                            }
-                        )
+                            },
+                            singleCommit.commit.committer.name
+                        );
                     }
-                    return resolve(myCommits);
+                    return resolve(commitRepository.getCommitInfo());
                 },
                 err => reject(err)
             );
         });
     }
 
-    public GetLogForFile(gitRoot: string, pathToFile: string): Promise<Array<ICommitInfo>> {
-        return new Promise<Array<ICommitInfo>>( function(resolve, reject) {
+    public GetLogForFile(gitRoot: string, pathToFile: string): Promise<ICommitInfo> {
+        return new Promise<ICommitInfo>( function(resolve, reject) {
             git.log({
                 fs,
                 dir: gitRoot
             }).then(
                 (commits: Array<git.ReadCommitResult>) => {
-                    const myCommits = Array<ICommitInfo>();
+                    const commitRepository: CommitRepository = new CommitRepository();
                     for (const singleCommit of commits) {
-                        myCommits.push(
-                            <ICommitInfo>  {
+                        commitRepository.addCommit(
+                            <ICommitEntry>  {
                                 committerTimestamp: singleCommit.commit.committer.timestamp,
-                                committerName: singleCommit.commit.committer.name,
+                                committerID: -1,
                                 message: singleCommit.commit.message
-                            }
-                        )
+                            },
+                            singleCommit.commit.committer.name
+                        );
                     }
-                    return resolve(myCommits);
+                    return resolve(commitRepository.getCommitInfo());
                 },
                 err => reject(err)
             );
