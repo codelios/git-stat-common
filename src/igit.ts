@@ -26,7 +26,7 @@ export interface IGit {
 
     GetLogs(gitRoot: string): Promise<ICommitInfo>;
 
-    GetLogForFile(gitRoot: string, pathToFile: string): Promise<ICommitInfo>;
+    GetLogsForFile(gitRoot: string, pathToFile: string): Promise<ICommitInfo>;
 
 }
 
