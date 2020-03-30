@@ -22,60 +22,46 @@ export class MyIsomorphicGit {
         }
     }
 
-    public GetLogs(gitRoot: string): Promise<ICommitInfo> {
+    public async GetLogs(gitRoot: string): Promise<ICommitInfo> {
         const self = this;
-        return new Promise<ICommitInfo>( function(resolve, reject) {
-            git.log({
+        return await new Promise<ICommitInfo>( async function(resolve, reject) {
+            const commits: Array<git.ReadCommitResult> = await git.log({
                 fs,
                 dir: gitRoot
-            }).then(
-                (commits: Array<git.ReadCommitResult>) => {
-                    const commitRepository: CommitRepository = new CommitRepository();
-                    for (const singleCommit of commits) {
-                        commitRepository.addCommit(self.toICommitEntry(singleCommit), singleCommit.commit.committer.name);
-                    }
-                    return resolve(commitRepository.getCommitInfo());
-                },
-                err => reject(err)
-            );
+            });
+            const commitRepository: CommitRepository = new CommitRepository();
+            for (const singleCommit of commits) {
+                commitRepository.addCommit(self.toICommitEntry(singleCommit), singleCommit.commit.committer.name);
+            }
+            return resolve(commitRepository.getCommitInfo());
         });
     }
 
-    public GetLogsForFile(gitRoot: string, pathToFile: string): Promise<ICommitInfo> {
+    public async GetLogsForFile(gitRoot: string, pathToFile: string): Promise<ICommitInfo> {
         const self = this;
-        return new Promise<ICommitInfo>( function(resolve, reject) {
-            git.log({
-                fs,
-                dir: gitRoot
-            }).then(
-                (commits: Array<git.ReadCommitResult>) => {
-                    const commitRepository: CommitRepository = new CommitRepository();
-                    let lastSHA: string | null = null
-                    let lastCommit: git.ReadCommitResult | null = null
-                    for (const singleCommit of commits) {
-                        git.readObject({ fs, dir: gitRoot, oid: singleCommit.oid, filepath: pathToFile }).then(
-                            (o: any) => {
-                                if (o.oid !== lastSHA) {
-                                    if (lastSHA !== null && lastCommit !== null) {
-                                        commitRepository.addCommit(self.toICommitEntry(lastCommit), lastCommit.commit.committer.name);
-                                    }
-                                    lastSHA = o.oid
-                                }
-                                lastCommit = singleCommit
-                            },
-                            err => {
-                                // file no longer there
-                                if (lastCommit !== null) {
-                                    commitRepository.addCommit(self.toICommitEntry(lastCommit), lastCommit.commit.committer.name);
-                                }
-                                lastCommit = singleCommit
-                            }
-                        )
+        return await new Promise<ICommitInfo>( async function(resolve, reject) {
+            const commits: Array<git.ReadCommitResult> = await git.log({ fs, dir: gitRoot })
+            const commitRepository: CommitRepository = new CommitRepository();
+            let lastSHA: string | null = null
+            let lastCommit: git.ReadCommitResult | null = null
+            for (const singleCommit of commits) {
+                try {
+                    const o =  await git.readObject({ fs, dir: gitRoot, oid: singleCommit.oid, filepath: pathToFile });
+                    if (o.oid !== lastSHA) {
+                        if (lastSHA !== null && lastCommit !== null) {
+                            commitRepository.addCommit(self.toICommitEntry(lastCommit), lastCommit.commit.committer.name);
+                        }
+                        lastSHA = o.oid
                     }
-                    return resolve(commitRepository.getCommitInfo());
-                },
-                err => reject(err)
-            );
+                } catch (err) {
+                    // file no longer there
+                    if (lastCommit !== null) {
+                        commitRepository.addCommit(self.toICommitEntry(lastCommit), lastCommit.commit.committer.name);
+                    }
+                }
+                lastCommit = singleCommit
+            }
+            return resolve(commitRepository.getCommitInfo());
         });
     }
 
