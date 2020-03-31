@@ -1,6 +1,6 @@
 {
     "name": "git-stat-common",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "license": "MIT",
     "description": "Common Library code to refer git history",
     "main": "dist/main.js",
@@ -39,8 +39,8 @@
         "ts-loader": "6.2.2",
         "minimist": ">=1.2.3",
         "eslint": "6.8.0",
-        "@typescript-eslint/parser": "2.25.0",
-        "@typescript-eslint/eslint-plugin": "2.25.0",
+        "@typescript-eslint/parser": "2.26.0",
+        "@typescript-eslint/eslint-plugin": "2.26.0",
         "typescript": "3.8.3"
     }
 }
