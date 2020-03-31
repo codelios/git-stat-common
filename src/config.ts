@@ -2,8 +2,13 @@
 //
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
-
 'use strict';
 
-export { IGit, ICommitInfo, ICommitEntry } from './igit';
-export { MyIsomorphicGit } from './myisomorphicgit';
+export class Config {
+
+    fileLogLimit: number;
+
+    constructor() {
+        this.fileLogLimit = 20;
+    }
+}

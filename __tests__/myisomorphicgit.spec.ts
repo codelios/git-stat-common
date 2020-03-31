@@ -8,6 +8,7 @@ import { expect } from 'chai';
 import 'mocha';
 import { MyIsomorphicGit} from '../src/myisomorphicgit';
 import { ICommitInfo} from '../src/igit';
+import { Config } from '../src/config';
 
 describe('MyIsomorphicGit class' , () => {
 
@@ -33,7 +34,8 @@ describe('MyIsomorphicGit class' , () => {
     it('GetLogsForFile', (done) => {
         const gitClient: MyIsomorphicGit = new MyIsomorphicGit();
         const dirPath = "/tmp/commons-lang";
-        gitClient.GetLogsForFile(dirPath, "CONTRIBUTING.md").then(
+        const config: Config = new Config();
+        gitClient.GetLogsForFile(config, dirPath, "CONTRIBUTING.md").then(
             (commitInfo: ICommitInfo) => {
                 expect(commitInfo).to.be.not.null;
                 expect(commitInfo.commits.length).to.be.greaterThan(0);

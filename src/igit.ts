@@ -1,8 +1,9 @@
-// Copyright (c) 2020 MalvaHQ
+// Copyright (c) 2020 GitLios
 //
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 'use strict';
+import { Config } from './config';
 import * as path from 'path';
 
 export interface ICommitEntry {
@@ -46,7 +47,7 @@ export interface IGit {
 
     GetLogs(gitRoot: string): Promise<ICommitInfo>;
 
-    GetLogsForFile(gitRoot: string, pathToFile: string): Promise<ICommitInfo>;
+    GetLogsForFile(config: Config, gitRoot: string, pathToFile: string): Promise<ICommitInfo>;
 
 }
 
@@ -61,7 +62,9 @@ export class CommitRepository {
 
     reverseDict: Map<string, number> = new Map<string, number>();
 
-    public addCommit(commitEntry: ICommitEntry, commitKey: string, persistInfo: string) {
+    count: number = 0;
+
+    public addCommit(commitEntry: ICommitEntry, commitKey: string, persistInfo: string): number {
         let committerID: number|undefined = this.reverseDict.get(commitKey);
         if (committerID === undefined || committerID === null) {
             this.commitDict.set(this.globalCommitterID, persistInfo);
@@ -71,6 +74,8 @@ export class CommitRepository {
         }
         commitEntry.committerID = committerID;
         this.myCommits.push(commitEntry);
+        this.count++;
+        return this.count;
     }
 
     public end() {

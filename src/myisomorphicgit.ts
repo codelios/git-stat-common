@@ -8,6 +8,7 @@
 import * as git from 'isomorphic-git'
 import * as fs from 'fs';
 import { ICommitInfo, ICommitEntry, CommitRepository, getRelativePath } from './igit';
+import { Config } from './config';
 
 export class MyIsomorphicGit {
 
@@ -23,8 +24,8 @@ export class MyIsomorphicGit {
         }
     }
 
-    addCommit(commitRepository: CommitRepository, singleCommit: git.ReadCommitResult) {
-        commitRepository.addCommit(this.toICommitEntry(singleCommit),
+    addCommit(commitRepository: CommitRepository, singleCommit: git.ReadCommitResult): number {
+        return commitRepository.addCommit(this.toICommitEntry(singleCommit),
                     singleCommit.commit.committer.name + singleCommit.commit.committer.email,
                     singleCommit.commit.committer.name);
 
@@ -46,7 +47,7 @@ export class MyIsomorphicGit {
         });
     }
 
-    public async GetLogsForFile(gitRoot: string, pathToFile: string): Promise<ICommitInfo> {
+    public async GetLogsForFile(config: Config, gitRoot: string, pathToFile: string): Promise<ICommitInfo> {
         const self = this;
         const relativefsPath = getRelativePath(gitRoot, pathToFile);
         return await new Promise<ICommitInfo>( async function(resolve, reject) {
@@ -59,14 +60,20 @@ export class MyIsomorphicGit {
                     const o =  await git.readObject({ fs, dir: gitRoot, oid: singleCommit.oid, filepath: relativefsPath });
                     if (o.oid !== lastSHA) {
                         if (lastSHA !== null && lastCommit !== null) {
-                            self.addCommit(commitRepository, lastCommit);
+                            const lastCount = self.addCommit(commitRepository, lastCommit);
+                            if (lastCount > config.fileLogLimit) {
+                                break
+                            }
                         }
                         lastSHA = o.oid
                     }
                 } catch (err) {
                     // file no longer there
                     if (lastCommit !== null) {
-                        self.addCommit(commitRepository, lastCommit);
+                        const lastCount = self.addCommit(commitRepository, lastCommit);
+                        if (lastCount > config.fileLogLimit) {
+                            break
+                        }
                     }
                 }
                 lastCommit = singleCommit
