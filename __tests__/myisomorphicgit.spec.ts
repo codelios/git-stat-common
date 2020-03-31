@@ -13,7 +13,7 @@ describe('MyIsomorphicGit class' , () => {
 
     it('GetLogs', (done) => {
         const gitClient: MyIsomorphicGit = new MyIsomorphicGit();
-        const filePath = "/opt/code/src/github.com/apache/commons-lang";
+        const filePath = "/tmp/commons-lang";
         gitClient.GetLogs(filePath).then(
             (commitInfo: ICommitInfo) => {
                 expect(commitInfo).to.be.not.null;
@@ -32,15 +32,21 @@ describe('MyIsomorphicGit class' , () => {
 
     it('GetLogsForFile', (done) => {
         const gitClient: MyIsomorphicGit = new MyIsomorphicGit();
-        const dirPath = "/opt/code/src/github.com/apache/commons-lang";
+        const dirPath = "/tmp/commons-lang";
         gitClient.GetLogsForFile(dirPath, "CONTRIBUTING.md").then(
             (commitInfo: ICommitInfo) => {
                 expect(commitInfo).to.be.not.null;
                 expect(commitInfo.commits.length).to.be.greaterThan(0);
                 expect(commitInfo.commitDict.size).to.be.greaterThan(0);
+                let count = 0;
                 for ( const commit of commitInfo.commits) {
                     expect(commit.message.length).to.be.greaterThan(0);
                     expect(commit.committerID).to.be.greaterThan(-1);
+                    count++;
+                    if (count < 10) {
+                        const committerName = commitInfo.commitDict.get(commit.committerID);
+                        console.log(committerName + " " + new Date(commit.committerTimestamp*1000) + " " + commit.message);
+                    }
                 }
             },
             err => {

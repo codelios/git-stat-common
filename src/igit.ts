@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 'use strict';
-
+import * as path from 'path';
 
 export interface ICommitEntry {
 
@@ -73,12 +73,28 @@ export class CommitRepository {
         this.myCommits.push(commitEntry);
     }
 
+    public end() {
+        this.reverseDict.clear();
+    }
+
     public getCommitInfo(): ICommitInfo {
         return <ICommitInfo> {
             commits: this.myCommits,
             commitDict: this.commitDict
         }
     }
+}
 
-
+/**
+ * getRelativePath returns the relative path for `fsPath` relative to `gitRoot` .
+ * @param gitRoot
+ * @param fsPath
+ */
+export function getRelativePath(gitRoot: string, fsPath: string) : string {
+    const candidate = path.relative(gitRoot, fsPath);
+    if (candidate.startsWith("..")) {
+        return fsPath;
+    } else {
+        return candidate;
+    }
 }

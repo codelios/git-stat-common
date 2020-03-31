@@ -7,7 +7,7 @@
 
 import * as git from 'isomorphic-git'
 import * as fs from 'fs';
-import { ICommitInfo, ICommitEntry, CommitRepository } from './igit';
+import { ICommitInfo, ICommitEntry, CommitRepository, getRelativePath } from './igit';
 
 export class MyIsomorphicGit {
 
@@ -41,12 +41,14 @@ export class MyIsomorphicGit {
             for (const singleCommit of commits) {
                 self.addCommit(commitRepository, singleCommit);
             }
+            commitRepository.end();
             return resolve(commitRepository.getCommitInfo());
         });
     }
 
     public async GetLogsForFile(gitRoot: string, pathToFile: string): Promise<ICommitInfo> {
         const self = this;
+        const relativefsPath = getRelativePath(gitRoot, pathToFile);
         return await new Promise<ICommitInfo>( async function(resolve, reject) {
             const commits: Array<git.ReadCommitResult> = await git.log({ fs, dir: gitRoot })
             const commitRepository: CommitRepository = new CommitRepository();
@@ -54,7 +56,7 @@ export class MyIsomorphicGit {
             let lastCommit: git.ReadCommitResult | null = null
             for (const singleCommit of commits) {
                 try {
-                    const o =  await git.readObject({ fs, dir: gitRoot, oid: singleCommit.oid, filepath: pathToFile });
+                    const o =  await git.readObject({ fs, dir: gitRoot, oid: singleCommit.oid, filepath: relativefsPath });
                     if (o.oid !== lastSHA) {
                         if (lastSHA !== null && lastCommit !== null) {
                             self.addCommit(commitRepository, lastCommit);
@@ -69,6 +71,7 @@ export class MyIsomorphicGit {
                 }
                 lastCommit = singleCommit
             }
+            commitRepository.end();
             return resolve(commitRepository.getCommitInfo());
         });
     }
