@@ -1,6 +1,6 @@
 {
     "name": "git-stat-common",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "license": "MIT",
     "description": "Common Library code to refer git history",
     "main": "dist/main.js",
