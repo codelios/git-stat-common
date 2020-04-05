@@ -18,7 +18,7 @@
         "lint": "eslint src --ext ts",
         "prepublishOnly": "npm run prod",
         "clean": "rm -fr lib dist",
-        "compile": "npm run clean && tsc -p ./",
+        "compile": "npm run clean && npm run lint && tsc -p ./",
         "dev": "rm -fr node_modules/fsevents && npm run compile && webpack --mode development",
         "prod": "rm -fr node_modules/fsevents && npm run compile && webpack --mode production",
         "test": "npm run dev && mocha --timeout 10000 -r ts-node/register __tests__/**/*.spec.ts"

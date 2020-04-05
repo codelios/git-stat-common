@@ -86,7 +86,7 @@ export class CommitRepository {
         return <ICommitInfo> {
             commits: this.myCommits,
             commitDict: this.commitDict
-        }
+        };
     }
 }
 

@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as git from 'isomorphic-git'
+import * as git from 'isomorphic-git';
 import * as fs from 'fs';
 import { ICommitInfo, ICommitEntry, CommitRepository, getRelativePath } from './igit';
 import { Config } from './config';
@@ -21,7 +21,7 @@ export class MyIsomorphicGit {
             committerTZOffset :singleCommit.commit.committer.timezoneOffset,
             committerID: -1,
             message: singleCommit.commit.message
-        }
+        };
     }
 
     addCommit(commitRepository: CommitRepository, singleCommit: git.ReadCommitResult): number {
@@ -51,10 +51,10 @@ export class MyIsomorphicGit {
         const self = this;
         const relativefsPath = getRelativePath(gitRoot, pathToFile);
         return await new Promise<ICommitInfo>( async function(resolve, reject) {
-            const commits: Array<git.ReadCommitResult> = await git.log({ fs, dir: gitRoot })
+            const commits: Array<git.ReadCommitResult> = await git.log({ fs, dir: gitRoot });
             const commitRepository: CommitRepository = new CommitRepository();
-            let lastSHA: string | null = null
-            let lastCommit: git.ReadCommitResult | null = null
+            let lastSHA: string | null = null;
+            let lastCommit: git.ReadCommitResult | null = null;
             for (const singleCommit of commits) {
                 try {
                     const o =  await git.readObject({ fs, dir: gitRoot, oid: singleCommit.oid, filepath: relativefsPath });
@@ -62,21 +62,21 @@ export class MyIsomorphicGit {
                         if (lastSHA !== null && lastCommit !== null) {
                             const lastCount = self.addCommit(commitRepository, lastCommit);
                             if (lastCount > config.fileLogLimit) {
-                                break
+                                break;
                             }
                         }
-                        lastSHA = o.oid
+                        lastSHA = o.oid;
                     }
                 } catch (err) {
                     // file no longer there
                     if (lastCommit !== null) {
                         const lastCount = self.addCommit(commitRepository, lastCommit);
                         if (lastCount > config.fileLogLimit) {
-                            break
+                            break;
                         }
                     }
                 }
-                lastCommit = singleCommit
+                lastCommit = singleCommit;
             }
             commitRepository.end();
             return resolve(commitRepository.getCommitInfo());
